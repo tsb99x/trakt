@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="x-version" th:attr="content=${version}"/>
+    <title>Trakt -- ERROR</title>
+</head>
+<body>
+
+<div>Error happened!</div>
+<div th:text="${message}"></div>
+<a href="/">homepage</a>
+
+</body>
+</html>

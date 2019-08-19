@@ -1,0 +1,21 @@
+spring:
+  main.banner-mode: "off"
+  session:
+    store-type: jdbc
+
+logging:
+  level:
+    root: WARN
+
+---
+
+spring:
+  profiles: dev
+  main.banner-mode: console
+
+logging:
+  level:
+    root: INFO
+
+trakt:
+  csrf-enabled: false
