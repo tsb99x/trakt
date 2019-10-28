@@ -1,11 +1,11 @@
 plugins {
 
-    kotlin("jvm") version "1.3.40"
-    kotlin("plugin.spring") version "1.3.40"
-    kotlin("plugin.jpa") version "1.3.40"
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
 
-    id("org.springframework.boot") version "2.1.6.RELEASE"
-    id("io.spring.dependency-management") version "1.0.8.RELEASE"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 
 }
 
@@ -29,8 +29,6 @@ repositories {
 
 }
 
-val junitVersion: String by project
-
 dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
@@ -51,9 +49,8 @@ dependencies {
 
     runtimeOnly("com.h2database:h2")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "junit", module = "junit")
+        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
 
