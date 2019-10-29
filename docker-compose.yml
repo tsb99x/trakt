@@ -4,5 +4,19 @@ services:
     build: .
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
+      - "SPRING_DATASOURCE_USERNAME=trakt"
+      - "SPRING_DATASOURCE_PASSWORD=trakt"
     ports:
-      - "8080"
+      - "49080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12
+    environment:
+      - "POSTGRES_USER=trakt"
+      - "POSTGRES_PASSWORD=trakt"
+      - "POSTGRES_DB=trakt"
+    ports:
+      - "49432:5432"

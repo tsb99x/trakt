@@ -8,12 +8,14 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import java.time.LocalDateTime
+import java.util.*
 
 @Controller
 class MessageController(
 
-    val configProperties: ConfigProperties,
-    val service: MessageService
+    private val configProperties: ConfigProperties,
+    private val service: MessageService
 
 ) {
 
@@ -39,7 +41,8 @@ class MessageController(
             throw GenericException("msg must not be 123")
         }
 
-        service.add(MessageEntity(text = msg))
+        val entity = MessageEntity(UUID.randomUUID(), msg, LocalDateTime.now())
+        service.add(entity)
         return "redirect:/"
 
     }

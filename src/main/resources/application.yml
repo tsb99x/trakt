@@ -13,6 +13,11 @@ spring:
   profiles: dev
   main.banner-mode: console
 
+  datasource:
+    url: jdbc:postgresql://localhost:49432/trakt
+    username: trakt
+    password: trakt
+
 logging:
   level:
     root: INFO

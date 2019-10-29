@@ -11,7 +11,7 @@ import java.util.logging.Logger
 @ControllerAdvice
 class GeneralExceptionHandlers(
 
-    val configProperties: ConfigProperties
+    private val configProperties: ConfigProperties
 
 ) {
 

@@ -12,8 +12,8 @@ import javax.sql.DataSource
 @EnableWebSecurity
 class WebSecurityConfig(
 
-    val dataSource: DataSource,
-    val configProperties: ConfigProperties
+    private val dataSource: DataSource,
+    private val configProperties: ConfigProperties
 
 ) : WebSecurityConfigurerAdapter() {
 

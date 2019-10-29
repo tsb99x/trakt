@@ -1,18 +1,20 @@
 package io.github.tsb99x.trakt.user
 
+import io.github.tsb99x.trakt.toUUID
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 class UserDao(
 
-    val jdbcTemplate: JdbcTemplate
+    private val jdbcTemplate: JdbcTemplate
 
 ) {
 
-    fun findAllWithRoles(): Map<Long, UserEntity> {
+    fun findAllWithRoles(): Map<UUID, UserEntity> {
 
-        val users = mutableMapOf<Long, UserEntity>()
+        val users = mutableMapOf<UUID, UserEntity>()
 
         jdbcTemplate.query( // language=SQL
             """
@@ -29,7 +31,7 @@ class UserDao(
             """.trimIndent()
         ) { rs ->
 
-            val userId = rs.getLong("user_id")
+            val userId = rs.getString("user_id").toUUID()
 
             val user = users.computeIfAbsent(userId) {
                 UserEntity(
@@ -41,7 +43,7 @@ class UserDao(
             }
 
             val role = RoleEntity(
-                id = rs.getLong("role_id"),
+                id = rs.getString("role_id").toUUID(),
                 name = rs.getString("name")
             )
 

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 @Service
 class MessageService(
 
-    val dao: MessageDao
+    private val dao: MessageDao
 
 ) {
 
@@ -17,7 +17,7 @@ class MessageService(
 
     fun getAll(): List<MessageEntity> {
 
-        return dao.findAllByOrderByIdDesc()
+        return dao.findAllOrderByCreationTimeDesc()
 
     }
 

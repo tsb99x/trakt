@@ -12,8 +12,8 @@ import org.springframework.web.context.request.WebRequest
 @Controller
 class CustomErrorController(
 
-    val configProperties: ConfigProperties,
-    val errorAttributes: ErrorAttributes
+    private val configProperties: ConfigProperties,
+    private val errorAttributes: ErrorAttributes
 
 ) : ErrorController {
 
@@ -34,6 +34,5 @@ class CustomErrorController(
         return "/error"
 
     }
-
 
 }
