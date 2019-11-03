@@ -1,5 +1,5 @@
 CREATE TABLE messages (
-    id          CHAR(36) NOT NULL,
+    id          UUID NOT NULL,
     text        VARCHAR NOT NULL,
 
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -10,12 +10,20 @@ CREATE TABLE messages (
 CREATE INDEX idx_messages_created_at ON messages (created_at);
 
 CREATE TABLE users (
-    id      CHAR(36) NOT NULL,
+    id      UUID NOT NULL,
     name    VARCHAR NOT NULL,
     hash    CHAR(60) NOT NULL,
     enabled BOOLEAN NOT NULL,
 
     CONSTRAINT users_pk PRIMARY KEY (id)
+);
+
+CREATE TABLE api_tokens (
+    id          UUID NOT NULL,
+    user_id     UUID NOT NULL REFERENCES users,
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
+
+    CONSTRAINT api_tokens_pk PRIMARY KEY (id)
 );
 
 -- Default credentials are 'admin:admin'
@@ -28,7 +36,7 @@ VALUES (
 );
 
 CREATE TABLE roles (
-    id      CHAR(36) NOT NULL,
+    id      UUID NOT NULL,
     name    VARCHAR NOT NULL,
 
     CONSTRAINT roles_pk PRIMARY KEY (id)
@@ -42,8 +50,8 @@ VALUES (
 );
 
 CREATE TABLE user_roles (
-    user_id CHAR(36) NOT NULL REFERENCES users,
-    role_id CHAR(36) NOT NULL REFERENCES roles
+    user_id UUID NOT NULL REFERENCES users,
+    role_id UUID NOT NULL REFERENCES roles
 );
 
 -- Default group of 'admin' is 'ADMIN'

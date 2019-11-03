@@ -1,7 +1,11 @@
 package io.github.tsb99x.trakt.message
 
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import io.github.tsb99x.trakt.data.MessageDao
+import io.github.tsb99x.trakt.data.MessageEntity
 import io.github.tsb99x.trakt.dumbMessageEntity
-import io.github.tsb99x.trakt.mock
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,11 +26,15 @@ class MessageServiceTest {
     @Test
     fun `expect service to just add entity`() {
 
-        val entity = dumbMessageEntity("random")
-        messageService.add(entity)
+        val text = "random"
+        messageService.add(text)
 
-        verify(messageDao).create(entity)
+        val captor = argumentCaptor<MessageEntity>()
+        verify(messageDao).insert(captor.capture())
         verifyNoMoreInteractions(messageDao)
+
+        val entity = captor.firstValue
+        assertEquals(text, entity.text)
 
     }
 
@@ -39,8 +47,7 @@ class MessageServiceTest {
             dumbMessageEntity("c")
         )
 
-        `when`(messageDao.findAllOrderByCreationTimeDesc())
-            .thenReturn(entities)
+        doReturn(entities).whenever(messageDao).findAllOrderByCreationTimeDesc()
 
         assertEquals(
             entities,

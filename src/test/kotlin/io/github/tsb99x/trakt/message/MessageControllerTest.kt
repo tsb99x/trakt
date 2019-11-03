@@ -1,5 +1,6 @@
 package io.github.tsb99x.trakt.message
 
+import io.github.tsb99x.trakt.data.MessageDao
 import io.github.tsb99x.trakt.truncate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -22,11 +23,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @ActiveProfiles("dev")
 @Tag("integration")
 class MessageControllerTest @Autowired constructor(
-
-    val jdbcTemplate: JdbcTemplate,
-    val mockMvc: MockMvc,
-    val messageDao: MessageDao
-
+    private val jdbcTemplate: JdbcTemplate,
+    private val mockMvc: MockMvc,
+    private val messageDao: MessageDao
 ) {
 
     @BeforeEach

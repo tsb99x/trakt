@@ -1,36 +1,38 @@
-package io.github.tsb99x.trakt.message
+package io.github.tsb99x.trakt.data
 
+import io.github.tsb99x.trakt.getLocalDateTime
+import io.github.tsb99x.trakt.getUUID
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 class MessageDao(
-
     private val jdbcTemplate: JdbcTemplate
-
 ) {
 
-    val rowHeaders = "id, text, created_at"
+    private val rowHeaders = "id, text, created_at"
+    private val rowArity = rowHeaders.split(",").joinToString(",") { "?" }
 
-    val rowMapper = RowMapper { rs, _ ->
+    private val rowMapper = RowMapper { rs, _ ->
 
         MessageEntity(
-            id = UUID.fromString(rs.getString("id")),
+            id = rs.getUUID("id"),
             text = rs.getString("text"),
-            createdAt = rs.getTimestamp("created_at").toLocalDateTime()
+            createdAt = rs.getLocalDateTime("created_at")
         )
 
     }
 
-    fun create(entity: MessageEntity) {
+    fun insert(
+        entity: MessageEntity
+    ) {
 
         jdbcTemplate.update( // language=SQL
             """
             
                 INSERT INTO messages ($rowHeaders)
-                VALUES (?, ?, ?);
+                VALUES ($rowArity);
             
             """.trimIndent(),
             entity.id, entity.text, entity.createdAt

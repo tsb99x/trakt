@@ -22,6 +22,7 @@ repositories {
 }
 
 val postgresVersion: String by project
+val mockitoKotlinVersion: String by project
 
 dependencies {
 
@@ -45,6 +46,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
 
 }
 
