@@ -1,8 +1,9 @@
-val kotlinVersion: String by settings
-val springBootVersion: String by settings
-val dependencyManagementVersion: String by settings
-
 pluginManagement {
+
+    val kotlinVersion: String by settings
+    val springBootVersion: String by settings
+    val dependencyManagementVersion: String by settings
+
     plugins {
 
         kotlin("jvm") version kotlinVersion
@@ -12,6 +13,7 @@ pluginManagement {
         id("io.spring.dependency-management") version dependencyManagementVersion
 
     }
+
 }
 
 rootProject.name = "trakt"
