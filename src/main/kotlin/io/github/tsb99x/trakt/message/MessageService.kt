@@ -4,7 +4,7 @@ import io.github.tsb99x.trakt.data.MessageDao
 import io.github.tsb99x.trakt.data.MessageEntity
 import io.github.tsb99x.trakt.exception.GenericException
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 @Service
@@ -24,7 +24,7 @@ class MessageService(
             throw GenericException("msg must not be 123")
         }
 
-        val entity = MessageEntity(UUID.randomUUID(), msg, LocalDateTime.now())
+        val entity = MessageEntity(UUID.randomUUID(), msg, Instant.now())
         dao.insert(entity)
 
     }

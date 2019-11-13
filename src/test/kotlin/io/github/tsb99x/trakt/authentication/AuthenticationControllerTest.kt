@@ -1,5 +1,6 @@
 package io.github.tsb99x.trakt.authentication
 
+import io.github.tsb99x.trakt.INTEGRATION
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Tag
@@ -15,7 +16,7 @@ import org.springframework.test.context.ActiveProfiles
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-@Tag("integration")
+@Tag(INTEGRATION)
 class AuthenticationControllerTest @Autowired constructor(
     private val restTemplate: TestRestTemplate
 ) {

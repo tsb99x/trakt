@@ -1,7 +1,6 @@
 CREATE TABLE messages (
     id          UUID NOT NULL,
     text        VARCHAR NOT NULL,
-
     created_at  TIMESTAMP WITH TIME ZONE NOT NULL,
 
     CONSTRAINT messages_pk PRIMARY KEY (id)

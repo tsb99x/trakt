@@ -3,7 +3,7 @@ package io.github.tsb99x.trakt
 import io.github.tsb99x.trakt.data.MessageEntity
 import io.github.tsb99x.trakt.data.UserEntity
 import org.springframework.jdbc.core.JdbcTemplate
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 val adminUser = UserEntity(
@@ -14,7 +14,7 @@ val adminUser = UserEntity(
 )
 
 fun dumbMessageEntity(msg: String) =
-    MessageEntity(UUID.randomUUID(), msg, LocalDateTime.now())
+    MessageEntity(UUID.randomUUID(), msg, Instant.now())
 
 fun JdbcTemplate.truncate(tableName: String) =
     this.execute("TRUNCATE TABLE $tableName")

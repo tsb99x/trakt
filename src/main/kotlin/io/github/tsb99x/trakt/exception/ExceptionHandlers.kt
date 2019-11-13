@@ -17,6 +17,20 @@ class ExceptionHandlers {
 
     private val logger = classLogger()
 
+    @ExceptionHandler(AuthException::class)
+    fun responseOnAuthException(
+        ex: AuthException
+    ): ResponseEntity<ApiErrorResponse> {
+
+        val desc = "Auth exception occurred"
+        val body = buildResponse(ex.localizedMessage)
+
+        logger.warn(desc, ex)
+
+        return ResponseEntity(body, HttpStatus.UNAUTHORIZED)
+
+    }
+
     @ExceptionHandler(GenericException::class)
     fun responseOnGenericException(
         ex: GenericException

@@ -1,5 +1,6 @@
 package io.github.tsb99x.trakt.message
 
+import io.github.tsb99x.trakt.INTEGRATION
 import io.github.tsb99x.trakt.data.MessageDao
 import io.github.tsb99x.trakt.truncate
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -21,7 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("dev")
-@Tag("integration")
+@Tag(INTEGRATION)
 class MessageControllerTest @Autowired constructor(
     private val jdbcTemplate: JdbcTemplate,
     private val mockMvc: MockMvc,

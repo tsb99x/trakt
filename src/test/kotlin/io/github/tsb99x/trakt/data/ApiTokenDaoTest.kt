@@ -1,6 +1,8 @@
 package io.github.tsb99x.trakt.data
 
+import io.github.tsb99x.trakt.INTEGRATION
 import io.github.tsb99x.trakt.adminUser
+import io.github.tsb99x.trakt.toUTC
 import io.github.tsb99x.trakt.truncate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -10,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.context.ActiveProfiles
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @SpringBootTest
 @ActiveProfiles("dev")
-@Tag("integration")
+@Tag(INTEGRATION)
 class ApiTokenDaoTest @Autowired constructor(
     private val apiTokenDao: ApiTokenDao,
     private val jdbcTemplate: JdbcTemplate
@@ -31,11 +34,23 @@ class ApiTokenDaoTest @Autowired constructor(
     @Test
     fun `expect insert to work`() {
 
-        val apiToken = ApiTokenEntity(UUID.randomUUID(), adminUser.id, LocalDateTime.now())
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), adminUser.id, Instant.now())
+
         apiTokenDao.insert(apiToken)
 
-        val count = countOf(apiToken)
-        assertEquals(1, count)
+        assertEquals(1, countOf(apiToken))
+
+    }
+
+    @Test
+    fun `expect select one by id to work`() {
+
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), adminUser.id, Instant.now().truncatedTo(ChronoUnit.SECONDS))
+        apiTokenDao.insert(apiToken)
+
+        val res = apiTokenDao.selectOneById(apiToken.id)
+
+        assertEquals(apiToken, res)
 
     }
 
@@ -53,7 +68,7 @@ class ApiTokenDaoTest @Autowired constructor(
                 AND created_at = ?
                 
             """.trimIndent(),
-            arrayOf(entity.id, entity.userId, entity.createdAt),
+            arrayOf(entity.id, entity.userId, entity.createdAt.toUTC()),
             Int::class.java
         )
 
