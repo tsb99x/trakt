@@ -12,6 +12,7 @@ class MessageDao(
     private val jdbcTemplate: JdbcTemplate
 ) {
 
+    private val tableName = "messages"
     private val rowHeaders = "id, text, created_at"
     private val rowArity = rowHeaders.split(",").joinToString(",") { "?" }
 
@@ -32,7 +33,7 @@ class MessageDao(
         jdbcTemplate.update(
             """
             
-                INSERT INTO messages ($rowHeaders)
+                INSERT INTO $tableName ($rowHeaders)
                 VALUES ($rowArity)
             
             """.trimIndent(),
@@ -41,13 +42,13 @@ class MessageDao(
 
     }
 
-    fun findAllOrderByCreationTimeDesc(): List<MessageEntity> {
+    fun selectAllOrderByCreationTimeDesc(): List<MessageEntity> {
 
         return jdbcTemplate.query(
             """
             
                 SELECT $rowHeaders
-                FROM messages
+                FROM $tableName
                 ORDER BY created_at DESC
             
             """.trimIndent(),

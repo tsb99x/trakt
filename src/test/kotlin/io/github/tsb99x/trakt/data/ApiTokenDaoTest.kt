@@ -1,10 +1,11 @@
 package io.github.tsb99x.trakt.data
 
+import io.github.tsb99x.trakt.ADMIN_USER
 import io.github.tsb99x.trakt.INTEGRATION
-import io.github.tsb99x.trakt.adminUser
-import io.github.tsb99x.trakt.toUTC
+import io.github.tsb99x.trakt.config.ConfigProperties
+import io.github.tsb99x.trakt.minusMinutes
 import io.github.tsb99x.trakt.truncate
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -21,6 +22,7 @@ import java.util.*
 @Tag(INTEGRATION)
 class ApiTokenDaoTest @Autowired constructor(
     private val apiTokenDao: ApiTokenDao,
+    private val configProperties: ConfigProperties,
     private val jdbcTemplate: JdbcTemplate
 ) {
 
@@ -32,45 +34,61 @@ class ApiTokenDaoTest @Autowired constructor(
     }
 
     @Test
-    fun `expect insert to work`() {
+    fun `expect insert and select one by id to work`() {
 
-        val apiToken = ApiTokenEntity(UUID.randomUUID(), adminUser.id, Instant.now())
+        val now = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), ADMIN_USER.id, now, now)
+
+        val firstRes = apiTokenDao.selectOneById(apiToken.id)
+        assertNull(firstRes)
 
         apiTokenDao.insert(apiToken)
 
-        assertEquals(1, countOf(apiToken))
+        val secondRes = apiTokenDao.selectOneById(apiToken.id)
+        assertEquals(apiToken, secondRes)
 
     }
 
     @Test
-    fun `expect select one by id to work`() {
+    fun `expect select one by id to return null on expired token`() {
 
-        val apiToken = ApiTokenEntity(UUID.randomUUID(), adminUser.id, Instant.now().truncatedTo(ChronoUnit.SECONDS))
+        val expiredTime = Instant.now()
+            .minusMinutes(configProperties.tokenLifetimeInMinutes + 1)
+            .truncatedTo(ChronoUnit.SECONDS)
+
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), ADMIN_USER.id, expiredTime, expiredTime)
         apiTokenDao.insert(apiToken)
 
         val res = apiTokenDao.selectOneById(apiToken.id)
-
-        assertEquals(apiToken, res)
+        assertNull(res)
 
     }
 
-    private fun countOf(
-        entity: ApiTokenEntity
-    ): Int {
+    @Test
+    fun `expect delete one by id to work`() {
 
-        return jdbcTemplate.queryForObject( // language=SQL
-            """
-                
-                SELECT COUNT(*)
-                FROM api_tokens
-                WHERE id = ?
-                AND user_id = ?
-                AND created_at = ?
-                
-            """.trimIndent(),
-            arrayOf(entity.id, entity.userId, entity.createdAt.toUTC()),
-            Int::class.java
-        )
+        val now = Instant.now().truncatedTo(ChronoUnit.SECONDS)
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), ADMIN_USER.id, now, now)
+        apiTokenDao.insert(apiToken)
+
+        apiTokenDao.deleteById(apiToken.id)
+
+        val res = apiTokenDao.selectOneById(apiToken.id)
+        assertNull(res)
+
+    }
+
+    @Test
+    fun `expect update last used at by id to work`() {
+
+        val now = Instant.now().minusSeconds(60).truncatedTo(ChronoUnit.SECONDS)
+        val apiToken = ApiTokenEntity(UUID.randomUUID(), ADMIN_USER.id, now, now)
+        apiTokenDao.insert(apiToken)
+
+        apiTokenDao.updateLastUsedAtById(apiToken.id)
+
+        val res = apiTokenDao.selectOneById(apiToken.id)!!
+        assertTrue(res.lastUsedAt.isAfter(now))
 
     }
 

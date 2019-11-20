@@ -12,7 +12,9 @@ class UserDao(
     private val jdbcTemplate: JdbcTemplate
 ) {
 
+    private val tableName = "users"
     private val rowHeaders = "id, name, hash, enabled"
+
     private val rowMapper = RowMapper { rs, _ ->
 
         UserEntity(
@@ -32,7 +34,7 @@ class UserDao(
             """
 
                 SELECT $rowHeaders
-                FROM users
+                FROM $tableName
                 WHERE name = ?
             
             """.trimIndent(),
@@ -50,7 +52,7 @@ class UserDao(
             """
                 
                 SELECT $rowHeaders
-                FROM users
+                FROM $tableName
                 WHERE id = ?
                 
             """.trimIndent(),

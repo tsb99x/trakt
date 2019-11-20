@@ -1,20 +1,21 @@
 package io.github.tsb99x.trakt.data
 
-import io.github.tsb99x.trakt.getInstant
-import io.github.tsb99x.trakt.getUUID
-import io.github.tsb99x.trakt.queryForObjectOrNull
-import io.github.tsb99x.trakt.toUTC
+import io.github.tsb99x.trakt.*
+import io.github.tsb99x.trakt.config.ConfigProperties
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
+import java.time.Instant
 import java.util.*
 
 @Repository
 class ApiTokenDao(
-    private val jdbcTemplate: JdbcTemplate
+    private val jdbcTemplate: JdbcTemplate,
+    private val configProperties: ConfigProperties
 ) {
 
-    private val rowHeaders = "id, user_id, created_at"
+    private val tableName = "api_tokens"
+    private val rowHeaders = "id, user_id, created_at, last_used_at"
     private val rowArity = rowHeaders.split(",").joinToString(",") { "?" }
 
     private val rowMapper: RowMapper<ApiTokenEntity> = RowMapper { rs, _ ->
@@ -22,7 +23,8 @@ class ApiTokenDao(
         ApiTokenEntity(
             id = rs.getUUID("id"),
             userId = rs.getUUID("user_id"),
-            createdAt = rs.getInstant("created_at")
+            createdAt = rs.getInstant("created_at"),
+            lastUsedAt = rs.getInstant("last_used_at")
         )
 
     }
@@ -34,11 +36,11 @@ class ApiTokenDao(
         jdbcTemplate.update(
             """
                 
-                INSERT INTO api_tokens ($rowHeaders)
+                INSERT INTO $tableName ($rowHeaders)
                 VALUES ($rowArity)
                 
             """.trimIndent(),
-            apiToken.id, apiToken.userId, apiToken.createdAt.toUTC()
+            apiToken.id, apiToken.userId, apiToken.createdAt.toUTC(), apiToken.lastUsedAt.toUTC()
         )
 
     }
@@ -47,16 +49,52 @@ class ApiTokenDao(
         id: UUID
     ): ApiTokenEntity? {
 
+        val expirationHorizon = Instant.now().minusMinutes(configProperties.tokenLifetimeInMinutes)
+
         return jdbcTemplate.queryForObjectOrNull(
             """
             
                 SELECT $rowHeaders
-                FROM api_tokens
+                FROM $tableName
+                WHERE id = ?
+                AND last_used_at >= ?
+                
+            """.trimIndent(),
+            arrayOf(id, expirationHorizon.toUTC()),
+            rowMapper
+        )
+
+    }
+
+    fun deleteById(
+        id: UUID
+    ) {
+
+        jdbcTemplate.update(
+            """
+                
+                DELETE FROM $tableName
                 WHERE id = ?
                 
             """.trimIndent(),
-            arrayOf(id),
-            rowMapper
+            id
+        )
+
+    }
+
+    fun updateLastUsedAtById(
+        id: UUID
+    ) {
+
+        jdbcTemplate.update(
+            """
+                
+                UPDATE $tableName
+                SET last_used_at = ?
+                WHERE id = ?
+                
+            """.trimIndent(),
+            Instant.now().toUTC(), id
         )
 
     }

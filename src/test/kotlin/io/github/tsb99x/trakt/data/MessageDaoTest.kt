@@ -30,7 +30,7 @@ class MessageDaoTest @Autowired constructor(
     }
 
     @Test
-    fun `expect insert and find with creation time ordering to work`() {
+    fun `expect insert and select all order by creation time to work`() {
 
         val dateTime = Instant.now().truncatedTo(ChronoUnit.SECONDS)
         val entity = MessageEntity(UUID.randomUUID(), "random", dateTime)
@@ -38,7 +38,7 @@ class MessageDaoTest @Autowired constructor(
 
         assertEquals(
             listOf(entity),
-            messageDao.findAllOrderByCreationTimeDesc()
+            messageDao.selectAllOrderByCreationTimeDesc()
         )
 
         val newDateTime = dateTime.plusSeconds(30)
@@ -47,7 +47,7 @@ class MessageDaoTest @Autowired constructor(
 
         assertEquals(
             listOf(newEntity, entity),
-            messageDao.findAllOrderByCreationTimeDesc()
+            messageDao.selectAllOrderByCreationTimeDesc()
         )
 
     }

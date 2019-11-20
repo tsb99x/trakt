@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.message
+package io.github.tsb99x.trakt.web.controller
 
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock
@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import io.github.tsb99x.trakt.data.MessageDao
 import io.github.tsb99x.trakt.data.MessageEntity
 import io.github.tsb99x.trakt.dumbMessageEntity
+import io.github.tsb99x.trakt.service.MessageService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,7 +48,7 @@ class MessageServiceTest {
             dumbMessageEntity("c")
         )
 
-        doReturn(entities).whenever(messageDao).findAllOrderByCreationTimeDesc()
+        doReturn(entities).whenever(messageDao).selectAllOrderByCreationTimeDesc()
 
         assertEquals(
             entities,

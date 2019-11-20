@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.config
+package io.github.tsb99x.trakt.rest.interceptor
 
 import io.github.tsb99x.trakt.REQUEST_ID
 import io.github.tsb99x.trakt.classLogger

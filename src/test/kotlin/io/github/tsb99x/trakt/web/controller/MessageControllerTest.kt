@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.message
+package io.github.tsb99x.trakt.web.controller
 
 import io.github.tsb99x.trakt.INTEGRATION
 import io.github.tsb99x.trakt.data.MessageDao
@@ -61,7 +61,7 @@ class MessageControllerTest @Autowired constructor(
             .andExpect(status().is3xxRedirection)
             .andExpect(redirectedUrl("/"))
 
-        val messages = messageDao.findAllOrderByCreationTimeDesc()
+        val messages = messageDao.selectAllOrderByCreationTimeDesc()
             .filter { it.text == msg }
 
         assertEquals(1, messages.size)

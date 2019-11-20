@@ -1,9 +1,12 @@
-package io.github.tsb99x.trakt.exception
+package io.github.tsb99x.trakt.rest.config
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import io.github.tsb99x.trakt.REQUEST_ID
 import io.github.tsb99x.trakt.classLogger
+import io.github.tsb99x.trakt.exception.AuthException
+import io.github.tsb99x.trakt.exception.GenericException
+import io.github.tsb99x.trakt.rest.model.ApiErrorResponse
 import io.github.tsb99x.trakt.toUUID
 import org.slf4j.MDC
 import org.springframework.http.HttpStatus

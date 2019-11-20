@@ -1,6 +1,6 @@
-package io.github.tsb99x.trakt.config
+package io.github.tsb99x.trakt.rest.interceptor
 
-import io.github.tsb99x.trakt.authorization.AuthorizationInterceptor
+import io.github.tsb99x.trakt.API_V1_PATH
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -16,11 +16,11 @@ class InterceptorConfig(
     ) {
 
         registry.addInterceptor(requestInterceptor)
-            .addPathPatterns("/api/v1/**")
+            .addPathPatterns("$API_V1_PATH/**")
 
         registry.addInterceptor(authorizationInterceptor)
-            .addPathPatterns("/api/v1/**")
-            .excludePathPatterns("/api/v1/authenticate")
+            .addPathPatterns("$API_V1_PATH/**")
+            .excludePathPatterns("$API_V1_PATH/auth/login")
 
     }
 

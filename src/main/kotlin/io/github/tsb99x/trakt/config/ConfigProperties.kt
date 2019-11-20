@@ -12,6 +12,7 @@ class ConfigProperties {
      */
 
     var csrfEnabled: Boolean = true
+    var tokenLifetimeInMinutes: Long = 7 /* days */ * 24 /* hours */ * 60 /* minutes */
 
     /**
      * Environment variables

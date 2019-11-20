@@ -1,6 +1,7 @@
-package io.github.tsb99x.trakt.message
+package io.github.tsb99x.trakt.web.controller
 
 import io.github.tsb99x.trakt.config.ConfigProperties
+import io.github.tsb99x.trakt.service.MessageService
 import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model

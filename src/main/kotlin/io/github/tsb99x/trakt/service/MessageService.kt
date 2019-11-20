@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.message
+package io.github.tsb99x.trakt.service
 
 import io.github.tsb99x.trakt.data.MessageDao
 import io.github.tsb99x.trakt.data.MessageEntity
@@ -31,7 +31,7 @@ class MessageService(
 
     fun getAll(): List<MessageEntity> {
 
-        return dao.findAllOrderByCreationTimeDesc()
+        return dao.selectAllOrderByCreationTimeDesc()
 
     }
 

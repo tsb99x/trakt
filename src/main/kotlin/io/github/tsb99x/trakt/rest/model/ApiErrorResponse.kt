@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.exception
+package io.github.tsb99x.trakt.rest.model
 
 import java.util.*
 

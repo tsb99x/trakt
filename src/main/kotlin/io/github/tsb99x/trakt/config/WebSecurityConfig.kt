@@ -44,7 +44,7 @@ class WebSecurityConfig(
 
         auth.jdbcAuthentication()
             .dataSource(dataSource)
-            .usersByUsernameQuery( // language=SQL
+            .usersByUsernameQuery(
                 """
                 
                     SELECT name, hash, enabled
@@ -53,7 +53,7 @@ class WebSecurityConfig(
                 
                 """.trimIndent()
             )
-            .authoritiesByUsernameQuery( // language=SQL
+            .authoritiesByUsernameQuery(
                 """
                 
                     SELECT u.name, r.name

@@ -1,7 +1,8 @@
-package io.github.tsb99x.trakt.authorization
+package io.github.tsb99x.trakt.rest.interceptor
 
 import io.github.tsb99x.trakt.*
 import io.github.tsb99x.trakt.exception.AuthException
+import io.github.tsb99x.trakt.service.AuthorizationService
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.HandlerInterceptor
@@ -32,6 +33,8 @@ class AuthorizationInterceptor(
             ?: throw AuthException(API_TOKEN_MUST_BE_UUID)
 
         val user = authorizationService.authorize(apiTokenId)
+
+        request.setAttribute(API_TOKEN_ID_ATTRIBUTE, apiTokenId)
         request.setAttribute(USER_ATTRIBUTE, user)
 
         return true

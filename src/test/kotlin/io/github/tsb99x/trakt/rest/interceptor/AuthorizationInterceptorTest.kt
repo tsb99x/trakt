@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.authorization
+package io.github.tsb99x.trakt.rest.interceptor
 
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
@@ -6,6 +6,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.github.tsb99x.trakt.*
 import io.github.tsb99x.trakt.exception.AuthException
+import io.github.tsb99x.trakt.service.AuthorizationService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -25,11 +26,12 @@ class AuthorizationInterceptorTest {
 
         val token = UUID.randomUUID()
         doReturn("$BEARER $token").whenever(request).getHeader(HttpHeaders.AUTHORIZATION)
-        doReturn(adminUser).whenever(authorizationService).authorize(token)
+        doReturn(ADMIN_USER).whenever(authorizationService).authorize(token)
 
         assertTrue(interceptor.preHandle(request, mock(), mock()))
 
-        verify(request).setAttribute(USER_ATTRIBUTE, adminUser)
+        verify(request).setAttribute(API_TOKEN_ID_ATTRIBUTE, token)
+        verify(request).setAttribute(USER_ATTRIBUTE, ADMIN_USER)
 
     }
 
