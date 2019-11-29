@@ -3,84 +3,76 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 plugins {
 
-    kotlin("jvm")
-    kotlin("plugin.spring")
+    kotlin("jvm") apply false
+    id("org.springframework.boot") apply false
 
-    id("org.springframework.boot")
     id("io.spring.dependency-management")
 
 }
 
-group = "io.github.tsb99x"
-version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-
-repositories {
-
-    mavenCentral()
-
-}
-
+val springBootVersion: String by project
 val postgresVersion: String by project
 val mockitoKotlinVersion: String by project
 
-dependencies {
+subprojects {
 
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
+    apply(plugin = "io.spring.dependency-management")
 
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    group = "io.github.tsb99x"
+    version = "0.0.1-SNAPSHOT"
 
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.springframework.session:spring-session-jdbc")
+    repositories {
 
-    implementation("org.flywaydb:flyway-core")
+        mavenCentral()
 
-    runtimeOnly("org.postgresql:postgresql:$postgresVersion")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
-
-}
-
-tasks.withType<BootRun> {
-
-    args("--spring.profiles.active=dev")
-
-}
-
-tasks.withType<Test> {
-
-    useJUnitPlatform {
-        excludeTags("integration")
     }
 
-    testLogging {
-        events("passed", "skipped", "failed")
+    dependencyManagement {
+
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
+        }
+
+        dependencies {
+            dependency("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
+            dependency("org.postgresql:postgresql:$postgresVersion")
+        }
+
     }
 
-}
+    tasks.withType<KotlinCompile> {
 
-tasks.create<Test>("integrationTest") {
+        kotlinOptions {
+            freeCompilerArgs = listOf("-Xjsr305=strict")
+            jvmTarget = "1.8"
+        }
 
-    useJUnitPlatform {
-        includeTags("integration")
     }
 
-}
+    tasks.withType<BootRun> {
 
-tasks.withType<KotlinCompile> {
+        args("--spring.profiles.active=dev")
 
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "1.8"
+    }
+
+    tasks.withType<Test> {
+
+        useJUnitPlatform {
+            excludeTags("integration")
+        }
+
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+
+    }
+
+    tasks.create<Test>("integrationTest") {
+
+        useJUnitPlatform {
+            includeTags("integration")
+        }
+
     }
 
 }

@@ -1,7 +1,23 @@
 version: "3"
 services:
-  trakt:
-    build: .
+  trakt-web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+      - "SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
+      - "SPRING_DATASOURCE_USERNAME=trakt"
+      - "SPRING_DATASOURCE_PASSWORD=trakt"
+    ports:
+      - "49088:8080"
+    depends_on:
+      - db
+
+  trakt-api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
       - "SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
