@@ -1,7 +1,5 @@
 spring:
   main.banner-mode: "off"
-  session:
-    store-type: jdbc
 
 logging:
   level:

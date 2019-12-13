@@ -1,51 +1,45 @@
 package io.github.tsb99x.trakt.core.service
 
-import com.nhaarman.mockitokotlin2.*
 import io.github.tsb99x.trakt.core.*
-import io.github.tsb99x.trakt.core.data.ApiTokenDao
-import io.github.tsb99x.trakt.core.data.ApiTokenEntity
-import io.github.tsb99x.trakt.core.data.UserDao
+import io.github.tsb99x.trakt.core.entity.ApiTokenEntity
 import io.github.tsb99x.trakt.core.exception.AuthException
+import io.github.tsb99x.trakt.data.dao.ApiTokenDao
+import io.github.tsb99x.trakt.data.dao.UserDao
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.time.Instant
 import java.util.*
 
 class AuthorizationServiceTest {
 
-    private val apiTokenDao: ApiTokenDao = mock()
-    private val userDao: UserDao = mock()
-    private val passwordEncoder = BCryptPasswordEncoder()
-    private val authorizationService =
-        AuthorizationService(apiTokenDao, userDao, passwordEncoder)
-
-    @BeforeEach
-    fun beforeEach() {
-
-        doReturn(ADMIN_USER).whenever(userDao).selectOneByUsername("admin")
-
+    private val apiTokenDao: ApiTokenDao = mockk()
+    private val userDao: UserDao = mockk {
+        every { selectOneByUsername("admin") } returns ADMIN_USER
     }
+    private val authorizationService = AuthorizationService(apiTokenDao, userDao)
 
     @Test
     fun `expect authorize to work`() {
 
         val now = Instant.now()
         val apiTokenEntity = ApiTokenEntity(UUID.randomUUID(), ADMIN_USER.id, now, now)
-        doReturn(apiTokenEntity).whenever(apiTokenDao).selectOneById(apiTokenEntity.id)
-        doReturn(ADMIN_USER).whenever(userDao).selectOneById(ADMIN_USER.id)
+        every { apiTokenDao.selectOneById(apiTokenEntity.id) } returns apiTokenEntity
+        every { apiTokenDao.updateLastUsedAtById(any()) } just runs
+        every { userDao.selectOneById(ADMIN_USER.id) } returns ADMIN_USER
 
         val res = authorizationService.authorize(apiTokenEntity.id)
 
         assertEquals(ADMIN_USER, res)
-        verify(apiTokenDao).updateLastUsedAtById(apiTokenEntity.id)
+        verify { apiTokenDao.updateLastUsedAtById(apiTokenEntity.id) }
 
     }
 
     @Test
     fun `expect authorize to throw on incorrect api token`() {
+
+        every { apiTokenDao.selectOneById(any()) } returns null
 
         val ex = assertThrows<AuthException> {
             authorizationService.authorize(UUID.randomUUID())
@@ -59,9 +53,9 @@ class AuthorizationServiceTest {
     fun `expect authorize to throw on non-existing user`() {
 
         val now = Instant.now()
-        val apiTokenEntity =
-            ApiTokenEntity(UUID.randomUUID(), UUID.randomUUID(), now, now)
-        doReturn(apiTokenEntity).whenever(apiTokenDao).selectOneById(apiTokenEntity.id)
+        val apiTokenEntity = ApiTokenEntity(UUID.randomUUID(), UUID.randomUUID(), now, now)
+        every { apiTokenDao.selectOneById(apiTokenEntity.id) } returns apiTokenEntity
+        every { userDao.selectOneById(any()) } returns null
 
         val ex = assertThrows<AuthException> {
             authorizationService.authorize(apiTokenEntity.id)
@@ -76,10 +70,9 @@ class AuthorizationServiceTest {
 
         val tempUserEntity = ADMIN_USER.copy(enabled = false)
         val now = Instant.now()
-        val apiTokenEntity =
-            ApiTokenEntity(UUID.randomUUID(), tempUserEntity.id, now, now)
-        doReturn(apiTokenEntity).whenever(apiTokenDao).selectOneById(apiTokenEntity.id)
-        doReturn(tempUserEntity).whenever(userDao).selectOneById(ADMIN_USER.id)
+        val apiTokenEntity = ApiTokenEntity(UUID.randomUUID(), tempUserEntity.id, now, now)
+        every { apiTokenDao.selectOneById(apiTokenEntity.id) } returns apiTokenEntity
+        every { userDao.selectOneById(ADMIN_USER.id) } returns tempUserEntity
 
         val ex = assertThrows<AuthException> {
             authorizationService.authorize(apiTokenEntity.id)
@@ -92,15 +85,19 @@ class AuthorizationServiceTest {
     @Test
     fun `expect login to work`() {
 
+        every { apiTokenDao.insert(any()) } just runs
+
         val token = authorizationService.login(ADMIN_USER.name, "admin")
 
-        verify(apiTokenDao).insert(token)
-        verifyNoMoreInteractions(apiTokenDao)
+        verify { apiTokenDao.insert(token) }
+        confirmVerified(apiTokenDao)
 
     }
 
     @Test
     fun `expect login to throw on wrong username`() {
+
+        every { userDao.selectOneByUsername(any()) } returns null
 
         val ex = assertThrows<AuthException> {
             authorizationService.login("incorrect-username", "admin")
@@ -124,13 +121,17 @@ class AuthorizationServiceTest {
     @Test
     fun `expect logout to work`() {
 
+        every { apiTokenDao.insert(any()) } just runs
+
         val token = authorizationService.login(ADMIN_USER.name, "admin")
-        reset(apiTokenDao)
+
+        clearMocks(apiTokenDao)
+        every { apiTokenDao.deleteById(any()) } just runs
 
         authorizationService.logout(token.id)
 
-        verify(apiTokenDao).deleteById(token.id)
-        verifyNoMoreInteractions(apiTokenDao)
+        verify { apiTokenDao.deleteById(token.id) }
+        confirmVerified(apiTokenDao)
 
     }
 

@@ -6,9 +6,9 @@ services:
       dockerfile: web/Dockerfile
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
-      - "SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
-      - "SPRING_DATASOURCE_USERNAME=trakt"
-      - "SPRING_DATASOURCE_PASSWORD=trakt"
+      - "DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
+      - "DATASOURCE_USERNAME=trakt"
+      - "DATASOURCE_PASSWORD=trakt"
     ports:
       - "49088:8080"
     depends_on:
@@ -20,9 +20,9 @@ services:
       dockerfile: api/Dockerfile
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
-      - "SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
-      - "SPRING_DATASOURCE_USERNAME=trakt"
-      - "SPRING_DATASOURCE_PASSWORD=trakt"
+      - "DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
+      - "DATASOURCE_USERNAME=trakt"
+      - "DATASOURCE_PASSWORD=trakt"
     ports:
       - "49080:8080"
     depends_on:

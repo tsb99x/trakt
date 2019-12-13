@@ -6,6 +6,7 @@ import io.github.tsb99x.trakt.core.ADMIN_USER
 import io.github.tsb99x.trakt.core.API_V1_PATH
 import io.github.tsb99x.trakt.core.INTEGRATION
 import io.github.tsb99x.trakt.core.toUri
+import io.github.tsb99x.trakt.data.config.SpringTestDataConfig
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -14,10 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.context.annotation.Import
 import org.springframework.http.*
 import org.springframework.test.context.ActiveProfiles
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(SpringTestDataConfig::class)
 @ActiveProfiles("dev")
 @Tag(INTEGRATION)
 class AuthControllerTest @Autowired constructor(

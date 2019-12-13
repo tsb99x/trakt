@@ -12,7 +12,8 @@ plugins {
 
 val springBootVersion: String by project
 val postgresVersion: String by project
-val mockitoKotlinVersion: String by project
+val mockkVersion: String by project
+val jbcryptVersion: String by project
 
 subprojects {
 
@@ -34,8 +35,9 @@ subprojects {
         }
 
         dependencies {
-            dependency("com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitoKotlinVersion")
+            dependency("io.mockk:mockk:$mockkVersion")
             dependency("org.postgresql:postgresql:$postgresVersion")
+            dependency("org.mindrot:jbcrypt:$jbcryptVersion")
         }
 
     }

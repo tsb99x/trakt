@@ -2,10 +2,6 @@ package io.github.tsb99x.trakt.core
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
-import java.sql.ResultSet
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -25,6 +21,12 @@ const val USER_IS_NOT_ENABLED = "User is not enabled"
 const val USER_NOT_FOUND = "User not found"
 const val USERNAME_AND_PASSWORD_COMBO_NOT_FOUND = "Such combination of username and password was not found"
 
+fun getConfigVariable(name: String, default: String? = null): String =
+    System.getProperty(name)
+        ?: System.getenv(name.replace(".", "_").toUpperCase())
+        ?: default
+        ?: throw IllegalStateException("Could not acquire configuration variable with name of '${name}'")
+
 fun String.toUUID(): UUID =
     UUID.fromString(this)
 
@@ -34,17 +36,8 @@ fun Instant.toUTC(): OffsetDateTime =
 fun Instant.minusMinutes(minutes: Long): Instant =
     this.minus(minutes, ChronoUnit.MINUTES)
 
-fun ResultSet.getUUID(columnLabel: String): UUID =
-    this.getObject(columnLabel, UUID::class.java)
-
-fun ResultSet.getInstant(columnLabel: String): Instant =
-    this.getObject(columnLabel, OffsetDateTime::class.java).toInstant()
-
 fun Any.classLogger(): Logger =
     LoggerFactory.getLogger(this::class.java)
 
 fun <T> tryOrNull(f: () -> T): T? =
     try { f() } catch (_: Exception) { null }
-
-fun <T> JdbcTemplate.queryForObjectOrNull(sql: String, args: Array<out Any>, rowMapper: RowMapper<T>): T? =
-    try { this.queryForObject(sql, args, rowMapper) } catch (_: EmptyResultDataAccessException) { null }

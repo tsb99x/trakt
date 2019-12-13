@@ -1,14 +1,12 @@
 package io.github.tsb99x.trakt.core.service
 
-import io.github.tsb99x.trakt.core.data.MessageDao
-import io.github.tsb99x.trakt.core.data.MessageEntity
+import io.github.tsb99x.trakt.core.entity.MessageEntity
 import io.github.tsb99x.trakt.core.exception.GenericException
-import org.springframework.stereotype.Service
+import io.github.tsb99x.trakt.data.dao.MessageDao
 import java.time.Instant
 import java.util.*
 
-@Service
-class MessageService(
+open class MessageService(
     private val dao: MessageDao
 ) {
 

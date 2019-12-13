@@ -1,8 +1,6 @@
 package io.github.tsb99x.trakt.web.controller
 
-import io.github.tsb99x.trakt.core.config.ConfigProperties
 import io.github.tsb99x.trakt.core.service.MessageService
-import org.springframework.security.access.annotation.Secured
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping
 
 @Controller
 class MessageController(
-    private val configProperties: ConfigProperties,
     private val service: MessageService
 ) {
 
@@ -20,7 +17,7 @@ class MessageController(
         model: Model
     ): String {
 
-        model["version"] = configProperties.version
+        model["version"] = "development" // FIXME : SHOULD BE A CONFIG VAR!
         model["messages"] = service.getAll()
 
         return "index"
@@ -28,7 +25,7 @@ class MessageController(
     }
 
     @PostMapping("/")
-    @Secured("ROLE_ADMIN")
+    // FIXME : ONLY FOR ADMIN!
     fun addMessage(
         msg: String
     ): String {

@@ -4,21 +4,18 @@ import io.github.tsb99x.trakt.core.INCORRECT_API_TOKEN
 import io.github.tsb99x.trakt.core.USERNAME_AND_PASSWORD_COMBO_NOT_FOUND
 import io.github.tsb99x.trakt.core.USER_IS_NOT_ENABLED
 import io.github.tsb99x.trakt.core.USER_NOT_FOUND
-import io.github.tsb99x.trakt.core.data.ApiTokenDao
-import io.github.tsb99x.trakt.core.data.ApiTokenEntity
-import io.github.tsb99x.trakt.core.data.UserDao
-import io.github.tsb99x.trakt.core.data.UserEntity
+import io.github.tsb99x.trakt.core.entity.ApiTokenEntity
+import io.github.tsb99x.trakt.core.entity.UserEntity
 import io.github.tsb99x.trakt.core.exception.AuthException
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Service
+import io.github.tsb99x.trakt.data.dao.ApiTokenDao
+import io.github.tsb99x.trakt.data.dao.UserDao
+import org.mindrot.jbcrypt.BCrypt
 import java.time.Instant
 import java.util.*
 
-@Service
-class AuthorizationService(
+open class AuthorizationService(
     private val apiTokenDao: ApiTokenDao,
-    private val userDao: UserDao,
-    private val passwordEncoder: PasswordEncoder
+    private val userDao: UserDao
 ) {
 
     fun login(
@@ -27,7 +24,7 @@ class AuthorizationService(
     ): ApiTokenEntity {
 
         val user = userDao.selectOneByUsername(username)
-        if (user == null || !passwordEncoder.matches(password, user.hash)) {
+        if (user == null || !BCrypt.checkpw(password, user.hash)) {
             throw AuthException(USERNAME_AND_PASSWORD_COMBO_NOT_FOUND)
         }
 

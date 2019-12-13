@@ -1,7 +1,6 @@
 plugins {
 
     kotlin("jvm")
-    kotlin("plugin.spring")
 
     `java-test-fixtures`
 
@@ -13,20 +12,12 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
+    implementation("org.slf4j:slf4j-api")
+    implementation("org.mindrot:jbcrypt")
 
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("org.springframework.security:spring-security-crypto")
-
-    runtimeOnly("org.postgresql:postgresql")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
-
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin")
+    testImplementation("io.mockk:mockk")
+    testImplementation("org.junit.jupiter:junit-jupiter")
 
     testFixturesImplementation(kotlin("stdlib-jdk8"))
-    testFixturesImplementation("org.springframework.boot:spring-boot-starter-jdbc")
 
 }

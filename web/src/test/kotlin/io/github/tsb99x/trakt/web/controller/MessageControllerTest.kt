@@ -1,8 +1,9 @@
 package io.github.tsb99x.trakt.web.controller
 
 import io.github.tsb99x.trakt.core.INTEGRATION
-import io.github.tsb99x.trakt.core.data.MessageDao
-import io.github.tsb99x.trakt.core.truncate
+import io.github.tsb99x.trakt.data.config.DataConfig
+import io.github.tsb99x.trakt.data.config.SpringTestDataConfig
+import io.github.tsb99x.trakt.data.truncate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
@@ -10,9 +11,8 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.context.annotation.Import
 import org.springframework.core.io.ClassPathResource
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -21,23 +21,24 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Import(SpringTestDataConfig::class)
 @ActiveProfiles("dev")
 @Tag(INTEGRATION)
 class MessageControllerTest @Autowired constructor(
-    private val jdbcTemplate: JdbcTemplate,
     private val mockMvc: MockMvc,
-    private val messageDao: MessageDao
+    private val dataConfig: DataConfig
 ) {
+
+    val messageDao = dataConfig.messageDao
 
     @BeforeEach
     fun beforeEach() {
 
-        jdbcTemplate.truncate("messages")
+        dataConfig.dataSource.truncate("messages")
 
     }
 
     @Test
-    @WithMockUser(username = "admin", password = "admin", roles = ["ADMIN"])
     fun `expect controller to return index page`() {
 
         val expected = ClassPathResource("index.html").file.readText()
@@ -51,7 +52,6 @@ class MessageControllerTest @Autowired constructor(
     }
 
     @Test
-    @WithMockUser(username = "admin", password = "admin", roles = ["ADMIN"])
     fun `expect controller to add page`() {
 
         val msg = "my message"

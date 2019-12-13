@@ -1,8 +1,7 @@
 package io.github.tsb99x.trakt.core
 
-import io.github.tsb99x.trakt.core.data.MessageEntity
-import io.github.tsb99x.trakt.core.data.UserEntity
-import org.springframework.jdbc.core.JdbcTemplate
+import io.github.tsb99x.trakt.core.entity.MessageEntity
+import io.github.tsb99x.trakt.core.entity.UserEntity
 import java.net.URI
 import java.time.Instant
 import java.util.*
@@ -18,9 +17,6 @@ val ADMIN_USER = UserEntity(
 
 fun dumbMessageEntity(msg: String) =
     MessageEntity(UUID.randomUUID(), msg, Instant.now())
-
-fun JdbcTemplate.truncate(tableName: String) =
-    this.execute("TRUNCATE TABLE $tableName")
 
 fun String.toUri() =
     URI(this)

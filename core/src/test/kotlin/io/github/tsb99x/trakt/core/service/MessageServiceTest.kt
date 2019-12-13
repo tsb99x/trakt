@@ -1,40 +1,25 @@
 package io.github.tsb99x.trakt.core.service
 
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
-import io.github.tsb99x.trakt.core.data.MessageDao
-import io.github.tsb99x.trakt.core.data.MessageEntity
 import io.github.tsb99x.trakt.core.dumbMessageEntity
+import io.github.tsb99x.trakt.data.dao.MessageDao
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.*
 
 class MessageServiceTest {
 
-    private val messageDao: MessageDao = mock()
+    private val messageDao: MessageDao = mockk()
     private val messageService = MessageService(messageDao)
-
-    @BeforeEach
-    fun beforeEach() {
-
-        reset(messageDao)
-
-    }
 
     @Test
     fun `expect service to just add entity`() {
 
+        every { messageDao.insert(any()) } just runs
+
         val text = "random"
         messageService.add(text)
 
-        val captor = argumentCaptor<MessageEntity>()
-        verify(messageDao).insert(captor.capture())
-        verifyNoMoreInteractions(messageDao)
-
-        val entity = captor.firstValue
-        assertEquals(text, entity.text)
+        verify { messageDao.insert(withArg { it.text == text }) }
 
     }
 
@@ -47,7 +32,7 @@ class MessageServiceTest {
             dumbMessageEntity("c")
         )
 
-        doReturn(entities).whenever(messageDao).selectAllOrderByCreationTimeDesc()
+        every { messageDao.selectAllOrderByCreationTimeDesc() } returns entities
 
         assertEquals(
             entities,
