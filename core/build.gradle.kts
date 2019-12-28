@@ -15,7 +15,6 @@ val slf4jVersion: String by project
 dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
 
     implementation("org.mindrot:jbcrypt:$jbcryptVersion")
     implementation("org.slf4j:slf4j-api:$slf4jVersion")

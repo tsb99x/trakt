@@ -20,11 +20,6 @@ class MessageServlet(
         response: HttpServletResponse
     ) {
 
-//        val context = contextMapOf(
-//            "version" to "development",
-//            "messages" to service.getAll()
-//        )
-
         val context = WebContext(request, response, servletContext, Locale.getDefault(), mapOf(
             "version" to "development",
             "messages" to service.getAll()

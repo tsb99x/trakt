@@ -1,7 +1,6 @@
 package io.github.tsb99x.trakt.api.filter
 
 import io.github.tsb99x.trakt.api.AUTHORIZATION
-import io.github.tsb99x.trakt.api.interceptor.AuthorizationFilter
 import io.github.tsb99x.trakt.core.*
 import io.github.tsb99x.trakt.core.exception.AuthException
 import io.github.tsb99x.trakt.core.service.AuthorizationService

@@ -1,7 +1,7 @@
-package io.github.tsb99x.trakt.api.interceptor
+package io.github.tsb99x.trakt.api.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.tsb99x.trakt.api.HttpFilter
+import io.github.tsb99x.trakt.api.*
 import io.github.tsb99x.trakt.api.model.ApiErrorResponse
 import io.github.tsb99x.trakt.core.REQUEST_ID
 import io.github.tsb99x.trakt.core.classLogger
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse.*
 
 class ExceptionFilter(
     private val objectMapper: ObjectMapper
-): HttpFilter {
+) : HttpFilter {
 
     private val logger = classLogger()
 
@@ -32,21 +32,18 @@ class ExceptionFilter(
 
         } catch (ex: GenericException) {
 
-            val desc = "Generic exception occurred"
-            logger.info(desc, ex)
+            logger.info(GENERIC_EXCEPTION_OCCURRED, ex)
             sendResponse(response, ex.localizedMessage, SC_BAD_REQUEST)
 
         } catch (ex: AuthException) {
 
-            val desc = "Auth exception occurred"
-            logger.warn(desc, ex)
+            logger.warn(AUTH_EXCEPTION_OCCURRED, ex)
             sendResponse(response, ex.localizedMessage, SC_UNAUTHORIZED)
 
         } catch (ex: Throwable) {
 
-            val desc = "Internal server error"
-            logger.error(desc, ex)
-            sendResponse(response, desc, SC_INTERNAL_SERVER_ERROR)
+            logger.error(INTERNAL_SERVER_ERROR, ex)
+            sendResponse(response, INTERNAL_SERVER_ERROR, SC_INTERNAL_SERVER_ERROR)
 
         }
 
@@ -60,11 +57,8 @@ class ExceptionFilter(
 
         val requestId = MDC.get(REQUEST_ID).toUUID()
         val body = ApiErrorResponse(requestId, desc)
-        val json = objectMapper.writeValueAsString(body)
 
-        response.status = statusCode
-        response.contentType = "application/json"
-        response.writer.println(json)
+        response.sendJson(statusCode, objectMapper, body)
         response.writer.close() // No one should be using OutputStream after ExceptionFilter.
 
     }

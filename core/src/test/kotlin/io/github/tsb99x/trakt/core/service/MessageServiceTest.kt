@@ -19,7 +19,7 @@ class MessageServiceTest {
         val text = "random"
         messageService.add(text)
 
-        verify { messageDao.insert(withArg { it.text == text }) }
+        verify { messageDao.insert(withArg { assertEquals(text, it.text) }) }
 
     }
 
@@ -34,10 +34,7 @@ class MessageServiceTest {
 
         every { messageDao.selectAllOrderByCreationTimeDesc() } returns entities
 
-        assertEquals(
-            entities,
-            messageService.getAll()
-        )
+        assertEquals(entities, messageService.getAll())
 
     }
 

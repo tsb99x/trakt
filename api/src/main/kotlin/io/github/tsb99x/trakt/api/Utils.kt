@@ -6,9 +6,15 @@ import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-const val AUTHORIZATION = "Authorization"
 const val APPLICATION_JSON = "application/json"
+const val AUTH_EXCEPTION_OCCURRED = "Auth exception occurred"
+const val AUTHORIZATION = "Authorization"
 const val CONTENT_TYPE = "Content-Type"
+const val FAILED_TO_FILTER_NON_HTTP_REQUEST = "Failed to filter non-HTTP request"
+const val FINISHED = "Finished"
+const val GENERIC_EXCEPTION_OCCURRED = "Generic exception occurred"
+const val INTERNAL_SERVER_ERROR = "Internal server error"
+const val SERVING = "Serving"
 
 interface HttpFilter : Filter {
 
@@ -27,7 +33,7 @@ interface HttpFilter : Filter {
         if (request is HttpServletRequest && response is HttpServletResponse) {
             doFilter(request, response, chain)
         } else {
-            throw ServletException("Failed to filter non-HTTP request")
+            throw ServletException(FAILED_TO_FILTER_NON_HTTP_REQUEST)
         }
 
     }

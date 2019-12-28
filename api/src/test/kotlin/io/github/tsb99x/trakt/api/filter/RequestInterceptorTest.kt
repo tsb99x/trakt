@@ -4,7 +4,8 @@ import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.Appender
-import io.github.tsb99x.trakt.api.interceptor.RequestFilter
+import io.github.tsb99x.trakt.api.FINISHED
+import io.github.tsb99x.trakt.api.SERVING
 import io.github.tsb99x.trakt.core.REQUEST_ID
 import io.github.tsb99x.trakt.core.classLogger
 import io.mockk.*
@@ -42,15 +43,19 @@ class RequestInterceptorTest {
 
         interceptor.doFilter(request, mockk(), chain)
 
-        verify { appender.doAppend(withArg {
-            it.level == Level.INFO && it.message == "Serving"
-            it.mdcPropertyMap.containsKey(REQUEST_ID)
-        }) }
+        verify {
+            appender.doAppend(withArg {
+                it.level == Level.INFO && it.message == SERVING
+                it.mdcPropertyMap.containsKey(REQUEST_ID)
+            })
+        }
 
-        verify { appender.doAppend(withArg {
-            it.level == Level.INFO && it.message == "Finished"
-            it.mdcPropertyMap.containsKey(REQUEST_ID)
-        }) }
+        verify {
+            appender.doAppend(withArg {
+                it.level == Level.INFO && it.message == FINISHED
+                it.mdcPropertyMap.containsKey(REQUEST_ID)
+            })
+        }
 
         confirmVerified(appender)
 

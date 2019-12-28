@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.api.interceptor
+package io.github.tsb99x.trakt.api.filter
 
 import io.github.tsb99x.trakt.api.AUTHORIZATION
 import io.github.tsb99x.trakt.api.HttpFilter

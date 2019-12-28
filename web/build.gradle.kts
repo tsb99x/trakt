@@ -36,7 +36,6 @@ val thymeleafVersion: String by project
 dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
 
     implementation(project(":core"))
     implementation(project(":data"))

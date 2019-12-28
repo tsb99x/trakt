@@ -1,4 +1,4 @@
-package io.github.tsb99x.trakt.data.config
+package io.github.tsb99x.trakt.config
 
 import com.zaxxer.hikari.HikariDataSource
 import io.github.tsb99x.trakt.core.getConfigVariable
@@ -6,14 +6,23 @@ import io.github.tsb99x.trakt.data.dao.*
 import org.flywaydb.core.Flyway
 import javax.sql.DataSource
 
-const val defaultTokenLifetimeInMinutes = (7 /* days */ * 24 /* hours */ * 60 /* minutes */).toString()
+const val DEFAULT_TOKEN_LIFETIME_IN_MINUTES = (7 /* days */ * 24 /* hours */ * 60 /* minutes */).toString()
 
 fun initDataConfig() =
     DataConfig(
         getConfigVariable("datasource.url"),
         getConfigVariable("datasource.username"),
         getConfigVariable("datasource.password"),
-        getConfigVariable("token.lifetime.in.minutes", defaultTokenLifetimeInMinutes).toLong()
+        getConfigVariable("token.lifetime.in.minutes", DEFAULT_TOKEN_LIFETIME_IN_MINUTES).toLong()
+    )
+
+fun initCoreConfig(
+    dataConfig: DataConfig
+) =
+    CoreConfig(
+        dataConfig.apiTokenDao,
+        dataConfig.userDao,
+        dataConfig.messageDao
     )
 
 class DataConfig(

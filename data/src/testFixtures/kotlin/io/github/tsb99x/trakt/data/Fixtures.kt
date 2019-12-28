@@ -1,6 +1,6 @@
 package io.github.tsb99x.trakt.data
 
-import io.github.tsb99x.trakt.data.config.DataConfig
+import io.github.tsb99x.trakt.config.DataConfig
 import javax.sql.DataSource
 
 fun initTestDataConfig() =

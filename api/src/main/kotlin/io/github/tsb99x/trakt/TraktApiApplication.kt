@@ -1,16 +1,10 @@
 package io.github.tsb99x.trakt
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import io.github.tsb99x.trakt.api.interceptor.AuthorizationFilter
-import io.github.tsb99x.trakt.api.interceptor.ExceptionFilter
-import io.github.tsb99x.trakt.api.interceptor.RequestFilter
-import io.github.tsb99x.trakt.api.servlet.DummyServlet
-import io.github.tsb99x.trakt.api.servlet.LoginServlet
-import io.github.tsb99x.trakt.api.servlet.LogoutServlet
+import io.github.tsb99x.trakt.config.ApiConfig
+import io.github.tsb99x.trakt.config.initApiConfig
+import io.github.tsb99x.trakt.config.initCoreConfig
+import io.github.tsb99x.trakt.config.initDataConfig
 import io.github.tsb99x.trakt.core.API_V1_PATH
-import io.github.tsb99x.trakt.core.service.AuthorizationService
-import io.github.tsb99x.trakt.data.config.DataConfig
-import io.github.tsb99x.trakt.data.config.initDataConfig
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.FilterHolder
 import org.eclipse.jetty.servlet.ServletContextHandler
@@ -21,30 +15,21 @@ import java.util.*
 import javax.servlet.DispatcherType
 
 fun initServer(
-    port: Int,
-    dataConfig: DataConfig
+    apiConfig: ApiConfig
 ): Server {
 
-    val objectMapper = jacksonObjectMapper()
-
-    val authorizationService = AuthorizationService(dataConfig.apiTokenDao, dataConfig.userDao)
-
-    val exceptionFilter = ExceptionFilter(objectMapper)
-    val requestFilter = RequestFilter()
-    val authorizationFilter = AuthorizationFilter(authorizationService, "/auth/login")
-
-    return Server(port).apply {
+    return Server(apiConfig.serverPort).apply {
 
         handler = ServletContextHandler(NO_SESSIONS or NO_SECURITY).apply {
             contextPath = API_V1_PATH
 
-            addServlet(ServletHolder(LoginServlet(authorizationService, objectMapper)), "/auth/login")
-            addServlet(ServletHolder(LogoutServlet(authorizationService)), "/auth/logout")
-            addServlet(ServletHolder(DummyServlet(objectMapper)), "/dummy")
+            addServlet(ServletHolder(apiConfig.loginServlet), "/auth/login")
+            addServlet(ServletHolder(apiConfig.logoutServlet), "/auth/logout")
+            addServlet(ServletHolder(apiConfig.dummyServlet), "/dummy")
 
-            addFilter(FilterHolder(requestFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
-            addFilter(FilterHolder(exceptionFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
-            addFilter(FilterHolder(authorizationFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+            addFilter(FilterHolder(apiConfig.requestFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+            addFilter(FilterHolder(apiConfig.exceptionFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+            addFilter(FilterHolder(apiConfig.authorizationFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
         }
 
     }
@@ -53,7 +38,11 @@ fun initServer(
 
 fun main() {
 
-    initServer(8080, initDataConfig()).apply {
+    val dataConfig = initDataConfig()
+    val coreConfig = initCoreConfig(dataConfig)
+    val apiConfig = initApiConfig(coreConfig)
+
+    initServer(apiConfig).apply {
 
         start()
         join()

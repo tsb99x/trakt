@@ -1,6 +1,8 @@
-package io.github.tsb99x.trakt.api.interceptor
+package io.github.tsb99x.trakt.api.filter
 
+import io.github.tsb99x.trakt.api.FINISHED
 import io.github.tsb99x.trakt.api.HttpFilter
+import io.github.tsb99x.trakt.api.SERVING
 import io.github.tsb99x.trakt.core.REQUEST_ID
 import io.github.tsb99x.trakt.core.classLogger
 import org.slf4j.MDC
@@ -25,11 +27,11 @@ class RequestFilter : HttpFilter {
         MDC.put(REQUEST_ID, requestId.toString())
         request.setAttribute(REQUEST_ID, requestId)
 
-        logger.info("Serving")
+        logger.info(SERVING)
 
         chain.doFilter(request, response)
 
-        logger.info("Finished")
+        logger.info(FINISHED)
 
     }
 

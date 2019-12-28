@@ -1,6 +1,9 @@
 package io.github.tsb99x.trakt.api
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.github.tsb99x.trakt.config.ApiConfig
+import io.github.tsb99x.trakt.config.CoreConfig
+import io.github.tsb99x.trakt.config.initCoreConfig
 import io.github.tsb99x.trakt.core.BEARER
 import io.github.tsb99x.trakt.core.toUri
 import io.github.tsb99x.trakt.data.initTestDataConfig
@@ -15,17 +18,32 @@ import java.net.http.HttpResponse
 import java.util.*
 import kotlin.random.Random
 
+const val LOWEST_ALLOWED_DYN_IANA_PORT = 49152
+const val HIGHEST_ALLOWED_DYN_IANA_PORT = 65535
+
+fun initTestApiConfig(
+    coreConfig: CoreConfig
+) =
+    ApiConfig(
+        coreConfig,
+        Random.nextInt(LOWEST_ALLOWED_DYN_IANA_PORT, HIGHEST_ALLOWED_DYN_IANA_PORT)
+    )
+
 class StartServerExtension : BeforeEachCallback, AfterEachCallback {
 
     private lateinit var server: Server
 
-    val serverPort = Random.nextInt(49152, 65535)
+    private val dataConfig = initTestDataConfig()
+    private val coreConfig = initCoreConfig(dataConfig)
+    private val apiConfig = initTestApiConfig(coreConfig)
+
+    val serverPort = apiConfig.serverPort
 
     override fun beforeEach(
         context: ExtensionContext
     ) {
 
-        server = initServer(serverPort, initTestDataConfig()).apply {
+        server = initServer(apiConfig).apply {
             start()
         }
 
