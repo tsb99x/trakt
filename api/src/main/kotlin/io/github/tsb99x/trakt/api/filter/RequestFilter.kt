@@ -1,24 +1,23 @@
 package io.github.tsb99x.trakt.api.interceptor
 
+import io.github.tsb99x.trakt.api.HttpFilter
 import io.github.tsb99x.trakt.core.REQUEST_ID
 import io.github.tsb99x.trakt.core.classLogger
 import org.slf4j.MDC
-import org.springframework.stereotype.Component
-import org.springframework.web.servlet.HandlerInterceptor
 import java.util.*
+import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@Component
-class RequestInterceptor : HandlerInterceptor {
+class RequestFilter : HttpFilter {
 
     private val logger = classLogger()
 
-    override fun preHandle(
+    override fun doFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        handler: Any
-    ): Boolean {
+        chain: FilterChain
+    ) {
 
         MDC.clear()
 
@@ -28,16 +27,7 @@ class RequestInterceptor : HandlerInterceptor {
 
         logger.info("Serving")
 
-        return true
-
-    }
-
-    override fun afterCompletion(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
-        handler: Any,
-        ex: Exception?
-    ) {
+        chain.doFilter(request, response)
 
         logger.info("Finished")
 

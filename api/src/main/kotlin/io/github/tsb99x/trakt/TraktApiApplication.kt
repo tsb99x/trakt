@@ -1,15 +1,63 @@
 package io.github.tsb99x.trakt
 
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.runApplication
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import io.github.tsb99x.trakt.api.interceptor.AuthorizationFilter
+import io.github.tsb99x.trakt.api.interceptor.ExceptionFilter
+import io.github.tsb99x.trakt.api.interceptor.RequestFilter
+import io.github.tsb99x.trakt.api.servlet.DummyServlet
+import io.github.tsb99x.trakt.api.servlet.LoginServlet
+import io.github.tsb99x.trakt.api.servlet.LogoutServlet
+import io.github.tsb99x.trakt.core.API_V1_PATH
+import io.github.tsb99x.trakt.core.service.AuthorizationService
+import io.github.tsb99x.trakt.data.config.DataConfig
+import io.github.tsb99x.trakt.data.config.initDataConfig
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.servlet.FilterHolder
+import org.eclipse.jetty.servlet.ServletContextHandler
+import org.eclipse.jetty.servlet.ServletContextHandler.NO_SECURITY
+import org.eclipse.jetty.servlet.ServletContextHandler.NO_SESSIONS
+import org.eclipse.jetty.servlet.ServletHolder
+import java.util.*
+import javax.servlet.DispatcherType
 
-@SpringBootApplication
-class TraktApiApplication
+fun initServer(
+    port: Int,
+    dataConfig: DataConfig
+): Server {
 
-fun main(
-    args: Array<String>
-) {
+    val objectMapper = jacksonObjectMapper()
 
-    runApplication<TraktApiApplication>(*args)
+    val authorizationService = AuthorizationService(dataConfig.apiTokenDao, dataConfig.userDao)
+
+    val exceptionFilter = ExceptionFilter(objectMapper)
+    val requestFilter = RequestFilter()
+    val authorizationFilter = AuthorizationFilter(authorizationService, "/auth/login")
+
+    return Server(port).apply {
+
+        handler = ServletContextHandler(NO_SESSIONS or NO_SECURITY).apply {
+            contextPath = API_V1_PATH
+
+            addServlet(ServletHolder(LoginServlet(authorizationService, objectMapper)), "/auth/login")
+            addServlet(ServletHolder(LogoutServlet(authorizationService)), "/auth/logout")
+            addServlet(ServletHolder(DummyServlet(objectMapper)), "/dummy")
+
+            addFilter(FilterHolder(requestFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+            addFilter(FilterHolder(exceptionFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+            addFilter(FilterHolder(authorizationFilter), "/*", EnumSet.of(DispatcherType.REQUEST))
+        }
+
+    }
+
+}
+
+fun main() {
+
+    initServer(8080, initDataConfig()).apply {
+
+        start()
+        join()
+
+    }
 
 }

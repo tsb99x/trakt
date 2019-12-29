@@ -1,29 +1,57 @@
 plugins {
 
+    application
     kotlin("jvm")
-    kotlin("plugin.spring")
+    id("com.github.johnrengelman.shadow")
 
-    id("org.springframework.boot")
+}
+
+tasks {
+
+    application {
+        mainClassName = "io.github.tsb99x.trakt.TraktWebApplicationKt"
+        applicationDefaultJvmArgs = listOf(
+            "-Ddatasource.url=jdbc:postgresql://localhost:49432/trakt",
+            "-Ddatasource.username=trakt",
+            "-Ddatasource.password=trakt"
+        )
+    }
+
+    jar {
+        manifest {
+            attributes["Main-Class"] = application.mainClassName
+        }
+    }
 
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+val jacksonVersion: String by project
+val jettyVersion: String by project
+val logbackVersion: String by project
+val mockkVersion: String by project
+val thymeleafVersion: String by project
+
 dependencies {
+
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
 
     implementation(project(":core"))
     implementation(project(":data"))
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+
+    implementation("org.eclipse.jetty:jetty-server:$jettyVersion")
+    implementation("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+    runtimeOnly("org.eclipse.jetty:jetty-io:$jettyVersion")
+
+    implementation("org.thymeleaf:thymeleaf:$thymeleafVersion")
 
     testImplementation(testFixtures(project(":core")))
     testImplementation(testFixtures(project(":data")))
-    testImplementation("io.mockk:mockk")
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+
+    testImplementation("io.mockk:mockk:$mockkVersion")
 
 }

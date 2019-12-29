@@ -1,30 +1,35 @@
 plugins {
 
-    kotlin("jvm")
-
     `java-test-fixtures`
+    kotlin("jvm")
 
 }
 
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
+val flywayVersion: String by project
+val hikariVersion: String by project
+val junitVersion: String by project
+val mockkVersion: String by project
+val postgresVersion: String by project
+
 dependencies {
 
-    implementation(project(":core"))
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.zaxxer:HikariCP")
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.springframework.boot:spring-boot-starter")
 
-    runtimeOnly("org.postgresql:postgresql")
+    implementation(project(":core"))
 
-    testImplementation(testFixtures(project(":core")))
-    testImplementation("io.mockk:mockk")
-    testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation("com.zaxxer:HikariCP:$hikariVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
+    runtimeOnly("org.postgresql:postgresql:$postgresVersion")
 
     testFixturesImplementation(kotlin("stdlib-jdk8"))
-    testFixturesImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-    }
+
+    testImplementation(testFixtures(project(":core")))
+
+    testImplementation("io.mockk:mockk:$mockkVersion")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 
 }

@@ -1,26 +1,32 @@
 package io.github.tsb99x.trakt.api.interceptor
 
+import io.github.tsb99x.trakt.api.AUTHORIZATION
+import io.github.tsb99x.trakt.api.HttpFilter
 import io.github.tsb99x.trakt.core.*
 import io.github.tsb99x.trakt.core.exception.AuthException
 import io.github.tsb99x.trakt.core.service.AuthorizationService
-import org.springframework.http.HttpHeaders
-import org.springframework.stereotype.Component
-import org.springframework.web.servlet.HandlerInterceptor
+import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-@Component
-class AuthorizationInterceptor(
-    private val authorizationService: AuthorizationService
-) : HandlerInterceptor {
+class AuthorizationFilter(
+    private val authorizationService: AuthorizationService,
+    private val excludePath: String
+) : HttpFilter {
 
-    override fun preHandle(
+    override fun doFilter(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        handler: Any
-    ): Boolean {
+        chain: FilterChain
+    ) {
 
-        val authHeader = request.getHeader(HttpHeaders.AUTHORIZATION)
+        val relUrl = request.requestURI.substring(request.contextPath.length)
+        if (relUrl == excludePath) {
+            chain.doFilter(request, response)
+            return
+        }
+
+        val authHeader = request.getHeader(AUTHORIZATION)
             ?: throw AuthException(AUTHORIZATION_HEADER_MUST_BE_PRESENT)
 
         if (!authHeader.startsWith(BEARER)) {
@@ -37,7 +43,7 @@ class AuthorizationInterceptor(
         request.setAttribute(API_TOKEN_ID_ATTRIBUTE, apiTokenId)
         request.setAttribute(USER_ATTRIBUTE, user)
 
-        return true
+        chain.doFilter(request, response)
 
     }
 

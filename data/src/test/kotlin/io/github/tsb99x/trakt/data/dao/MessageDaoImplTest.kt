@@ -2,7 +2,7 @@ package io.github.tsb99x.trakt.data.dao
 
 import io.github.tsb99x.trakt.core.INTEGRATION
 import io.github.tsb99x.trakt.core.entity.MessageEntity
-import io.github.tsb99x.trakt.data.config.initTestDataConfig
+import io.github.tsb99x.trakt.data.initTestDataConfig
 import io.github.tsb99x.trakt.data.truncate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach

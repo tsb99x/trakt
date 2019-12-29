@@ -4,7 +4,7 @@ import io.github.tsb99x.trakt.core.ADMIN_USER
 import io.github.tsb99x.trakt.core.INTEGRATION
 import io.github.tsb99x.trakt.core.entity.ApiTokenEntity
 import io.github.tsb99x.trakt.core.minusMinutes
-import io.github.tsb99x.trakt.data.config.initTestDataConfig
+import io.github.tsb99x.trakt.data.initTestDataConfig
 import io.github.tsb99x.trakt.data.truncate
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

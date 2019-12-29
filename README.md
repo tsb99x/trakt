@@ -18,7 +18,7 @@ To start development, you will need to run `docker-compose up -d db`, to launch 
 Database schema will be populated and validated at application or tests launch, courtesy of FlyWay.
 
 After that, use one of following commands:
-- To just run application: `./gradlew api:bootRun` or `./gradlew web:bootRun`
+- To just run application: `./gradlew api:run` or `./gradlew web:run`
 - To run only unit tests, use `./gradlew clean test`.
 - To run full test suite, use `./gradlew clean test integrationTest`.
 
