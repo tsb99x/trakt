@@ -1,6 +1,6 @@
 # Trakt
 
-Just a simple activity tracker
+This is an experiment on building a minimalistic app in Kotlin.
 
 ## Run in Docker
 
