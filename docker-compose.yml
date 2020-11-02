@@ -1,26 +1,14 @@
 version: "3"
 services:
-  trakt-web:
-    build:
-      context: .
-      dockerfile: web/Dockerfile
-    environment:
-      - "DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
-      - "DATASOURCE_USERNAME=trakt"
-      - "DATASOURCE_PASSWORD=trakt"
-    ports:
-      - "49088:8080"
-    depends_on:
-      - db
 
-  trakt-api:
+  trakt:
     build:
       context: .
-      dockerfile: api/Dockerfile
+      dockerfile: Dockerfile
     environment:
-      - "DATASOURCE_URL=jdbc:postgresql://db:5432/trakt"
-      - "DATASOURCE_USERNAME=trakt"
-      - "DATASOURCE_PASSWORD=trakt"
+      DATASOURCE_URL: jdbc:postgresql://db:5432/trakt
+      DATASOURCE_USERNAME: trakt
+      DATASOURCE_PASSWORD: trakt
     ports:
       - "49080:8080"
     depends_on:
@@ -29,8 +17,8 @@ services:
   db:
     image: postgres:12
     environment:
-      - "POSTGRES_USER=trakt"
-      - "POSTGRES_PASSWORD=trakt"
-      - "POSTGRES_DB=trakt"
+      POSTGRES_USER: trakt
+      POSTGRES_PASSWORD: trakt
+      POSTGRES_DB: trakt
     ports:
       - "49432:5432"

@@ -13,5 +13,3 @@ pluginManagement {
 }
 
 rootProject.name = "trakt"
-
-include("core", "data", "api-model", "api", "web")
